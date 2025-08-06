@@ -1,6 +1,6 @@
+// helpers/cloudinary.js
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
-
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,10 +8,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-exports.uploadToCloudinary = async (filePath) => {
+exports.uploadToCloudinary = async (filePathOrUrl, isUrl = false) => {
   try {
-    const result = await cloudinary.uploader.upload(filePath, {
-      folder: "diwali-images",
+    const result = await cloudinary.uploader.upload(filePathOrUrl, {
+      folder: "howdee-mvp-v1",
+      ...(isUrl ? { resource_type: "image" } : {}) // for URL-based upload
     });
     return result.secure_url;
   } catch (error) {
