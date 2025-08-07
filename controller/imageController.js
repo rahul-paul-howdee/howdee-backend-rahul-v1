@@ -1,5 +1,5 @@
 const { generateDiwaliImage } = require("../utils/generateImageReplicateUtil");
-// const {generateDiwaliImage} = require("../utils/curlImageGenerate")
+const { swapFace } = require("../utils/swapFaceUtil"); // new util
 const { uploadToCloudinary } = require("../utils/cloudinaryUtil");
 const {
   enhancePromptWithOpenAI,
@@ -7,7 +7,6 @@ const {
   enhanceBirthdayPromptWithOpenAI
 } = require("../utils/promptEnhancerOpenAiUtil");
 const fs = require("fs");
-
 
 exports.generateDiwaliImage = async (req, res) => {
   let tempFilePath = req.file?.path;
@@ -17,8 +16,9 @@ exports.generateDiwaliImage = async (req, res) => {
       return res.status(400).json({ error: "No selfie image provided" });
     }
 
+    // Upload selfie image
     const selfieUrl = await uploadToCloudinary(tempFilePath);
-    console.log("Selfie uploaded:", selfieUrl);
+    console.log("✅ Selfie uploaded:", selfieUrl);
 
     const userPrompt = req.body.prompt || "A person celebrating a festival";
     const lowerPrompt = userPrompt.toLowerCase();
@@ -33,26 +33,36 @@ exports.generateDiwaliImage = async (req, res) => {
       enhancedPrompt = await enhancePromptWithOpenAI(userPrompt);
     }
 
-    console.log("Enhanced Prompt:", enhancedPrompt);
+    console.log("✨ Enhanced Prompt:", enhancedPrompt);
 
-    // const result = await generateDiwaliImage(selfieUrl, enhancedPrompt);
+    // Generate creative image based on prompt (target image)
     const result = await generateDiwaliImage(selfieUrl, enhancedPrompt);
 
     if (!result?.output) {
-      throw new Error("Generation completed but no image URL returned");
+      throw new Error("Image generation completed but no image URL returned");
     }
+
+    const generatedImageUrl = result.output;
+    console.log("🎨 Generated Image URL:", generatedImageUrl);
+
+    // CORRECTED: Face swap - extract face from generated image, put into selfie
+    // source = generated image (face to extract), target = selfie (where to put the face)
+    const swappedImageUrl = await swapFace(generatedImageUrl, selfieUrl);
+    console.log("🤖 Swapped Image URL:", swappedImageUrl);
 
     res.json({
       success: true,
       selfie: selfieUrl,
-      generatedImage: result.output,
+      withoutSwap: generatedImageUrl,
+      generatedImage: swappedImageUrl,
+      swappedImage: swappedImageUrl,
       enhancedPrompt,
       status: result.status,
       processingTime: result.metrics?.predict_time
     });
 
   } catch (error) {
-    console.error("Controller Error:", error.message);
+    console.error("❌ Controller Error:", error.message);
     res.status(500).json({
       success: false,
       error: error.message,
