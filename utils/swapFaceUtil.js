@@ -25,10 +25,7 @@ async function swapFace(sourceImageUrl, targetImageUrl, saveToFile = false) {
       }
     );
 
-    console.log("🎯 Raw Replicate Output:", output);
-    console.log("🔍 Output type:", typeof output);
-    console.log("🔍 Is Array:", Array.isArray(output));
-    console.log("🔍 Constructor:", output?.constructor?.name);
+ 
 
     let imageUrl;
 
@@ -38,20 +35,15 @@ async function swapFace(sourceImageUrl, targetImageUrl, saveToFile = false) {
       
       if (typeof output.url === 'function') {
         const urlResult = await output.url();
-        console.log("📁 Called url() method result:", urlResult);
-        console.log("📁 URL result type:", typeof urlResult);
-        console.log("📁 URL result constructor:", urlResult?.constructor?.name);
-        
+      
         // Convert URL object to string if needed
         imageUrl = urlResult instanceof URL ? urlResult.toString() : String(urlResult);
-        console.log("📁 Final converted URL:", imageUrl);
       } else if (output.url) {
         imageUrl = typeof output.url === 'string' ? output.url : String(output.url);
       } else {
         throw new Error("FileOutput object has no url property or method");
       }
     } else if (output && output.constructor && output.constructor.name === 'ReadableStream') {
-      console.log("📡 Processing ReadableStream...");
       
       // Convert stream to string
       const reader = output.getReader();
@@ -66,7 +58,6 @@ async function swapFace(sourceImageUrl, targetImageUrl, saveToFile = false) {
         }
         result += decoder.decode(); // Final decode
         
-        console.log("📡 Stream result:", result);
         imageUrl = result.trim();
         
       } catch (streamError) {
@@ -82,8 +73,7 @@ async function swapFace(sourceImageUrl, targetImageUrl, saveToFile = false) {
       imageUrl = output?.url || output?.output || String(output);
     }
 
-    console.log("🎯 Final Image URL:", imageUrl);
-    console.log("🔍 Final URL type:", typeof imageUrl);
+
 
     // Validate URL
     if (!imageUrl || typeof imageUrl !== 'string') {
@@ -142,7 +132,6 @@ async function swapFaceStream(sourceImageUrl, targetImageUrl, saveToFile = false
         const response = await fetch(imageUrl);
         const buffer = await response.arrayBuffer();
         await fs.writeFile("face-swap-result.png", Buffer.from(buffer));
-        console.log("✅ Saved to face-swap-result.png");
       } catch (saveError) {
         console.warn("⚠️ Failed to save file:", saveError.message);
       }
