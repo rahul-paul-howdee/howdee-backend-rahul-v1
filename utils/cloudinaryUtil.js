@@ -8,14 +8,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-exports.uploadToCloudinary = async (filePathOrUrl, isUrl = false) => {
+exports.uploadToCloudinary = async (fileToUpload, resourceType = 'auto') => {
   try {
-    const result = await cloudinary.uploader.upload(filePathOrUrl, {
+    const result = await cloudinary.uploader.upload(fileToUpload, {
       folder: "howdee-mvp-v1",
-      ...(isUrl ? { resource_type: "image" } : {}) // for URL-based upload
+      resource_type: resourceType,
     });
     return result.secure_url;
   } catch (error) {
+    // Throws a more informative error message.
     throw new Error(`Cloudinary upload failed: ${error.message}`);
   }
 };
