@@ -1,4 +1,6 @@
 const { generateSubtleAnimation } = require("../utils/videoGenerateReplicateUtil");
+const { uploadToCloudinary } = require("../utils/cloudinaryUtil");
+
 
 /**
  * POST /api/generate-professional-video
@@ -15,7 +17,6 @@ exports.generateProfessionalVideo = async (req, res) => {
     }
 
     const lowerPrompt = prompt.toLowerCase();
-
     let animationPrompt;
 
     if (lowerPrompt.includes("diwali")) {
@@ -26,11 +27,18 @@ exports.generateProfessionalVideo = async (req, res) => {
       animationPrompt = "Very subtle eye blinking and slight hair movement, natural facial expression.";
     }
 
+    // 1. Generate the video using Replicate
     const generated = await generateSubtleAnimation(imageUrl, animationPrompt);
 
+    // 2. Upload the generated video URL to Cloudinary
+    // We explicitly set the resourceType to 'video' for robustness
+    const cloudinaryVideoUrl = await uploadToCloudinary(generated.videoUrl, 'video');
+
+    // 3. Respond with the new Cloudinary URL
     res.json({
       success: true,
-      videoUrl: generated.videoUrl,
+      videoUrl: cloudinaryVideoUrl, // Return the permanent Cloudinary URL
+      replicateUrl: generated.videoUrl, // You can still return the original for reference
       processingTime: generated.processingTime,
       animationPrompt
     });
@@ -41,7 +49,7 @@ exports.generateProfessionalVideo = async (req, res) => {
       success: false,
       error: error.message,
       suggestion: error.message.includes('Cloudinary')
-        ? "Try reducing text size or using simpler fonts"
+        ? "Upload to Cloudinary failed. Check if the Replicate URL is valid and public."
         : "Ensure your image URL is publicly accessible"
     });
   }
