@@ -20,26 +20,27 @@ exports.generateProfessionalVideo = async (req, res) => {
     let animationPrompt;
 
     if (lowerPrompt.includes("diwali")) {
-      animationPrompt = "The person bows down a little toward the camera with eyes closed. If a diya is present, its flame flickers subtly.";
+      animationPrompt =
+        "The person bows down a little toward the camera with eyes closed. If a diya is present, its flame flickers subtly.";
     } else if (lowerPrompt.includes("birthday")) {
-      animationPrompt = "The candle flames on the cake flicker. The person leans slightly forward, bringing the cake closer to the screen.";
+      animationPrompt =
+        "The candle flames on the cake flicker. The person leans slightly forward, bringing the cake closer to the screen.";
     } else {
-      animationPrompt = "Very subtle eye blinking and slight hair movement, natural facial expression.";
+      animationPrompt =
+        "Very subtle eye blinking and slight hair movement, natural facial expression.";
     }
 
-    // 1. Generate the video using Replicate
-    const generated = await generateSubtleAnimation(imageUrl, animationPrompt);
+    // Generate the video
+   const result = await generateSubtleAnimation(imageUrl, animationPrompt);
+console.log("📤 Animation generation result:", result);
+const { videoUrl, replicateUrl, processingTime } = result;
 
-    // 2. Upload the generated video URL to Cloudinary
-    // We explicitly set the resourceType to 'video' for robustness
-    const cloudinaryVideoUrl = await uploadToCloudinary(generated.videoUrl, 'video');
 
-    // 3. Respond with the new Cloudinary URL
     res.json({
       success: true,
-      videoUrl: cloudinaryVideoUrl, // Return the permanent Cloudinary URL
-      replicateUrl: generated.videoUrl, // You can still return the original for reference
-      processingTime: generated.processingTime,
+      videoUrl,       // Cloudinary permanent URL
+      replicateUrl,   // Replicate raw output URL
+      processingTime, // How long it took
       animationPrompt
     });
 
@@ -48,7 +49,7 @@ exports.generateProfessionalVideo = async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message,
-      suggestion: error.message.includes('Cloudinary')
+      suggestion: error.message.includes("Cloudinary")
         ? "Upload to Cloudinary failed. Check if the Replicate URL is valid and public."
         : "Ensure your image URL is publicly accessible"
     });
