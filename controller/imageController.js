@@ -4,7 +4,8 @@ const { uploadToCloudinary } = require("../utils/cloudinaryUtil");
 const {
   enhancePromptWithOpenAI,
   enhanceDiwaliPromptWithOpenAI,
-  enhanceBirthdayPromptWithOpenAI
+  enhanceBirthdayPromptWithOpenAI,
+  enhanceIndependencePromptWithOpenAI
 } = require("../utils/promptEnhancerOpenAiUtil");
 const fs = require("fs");
 
@@ -29,6 +30,8 @@ exports.generateDiwaliImage = async (req, res) => {
       enhancedPrompt = await enhanceDiwaliPromptWithOpenAI(userPrompt);
     } else if (lowerPrompt.includes("birthday")) {
       enhancedPrompt = await enhanceBirthdayPromptWithOpenAI(userPrompt);
+    } else if (lowerPrompt.includes("independence")) {
+      enhancedPrompt = await enhanceIndependencePromptWithOpenAI(userPrompt);
     } else {
       enhancedPrompt = await enhancePromptWithOpenAI(userPrompt);
     }
