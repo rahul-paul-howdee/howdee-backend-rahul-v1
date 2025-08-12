@@ -25,6 +25,9 @@ exports.generateProfessionalVideo = async (req, res) => {
     } else if (lowerPrompt.includes("birthday")) {
       animationPrompt =
         "The candle flames on the cake flicker. The person leans slightly forward, bringing the cake closer to the screen.";
+    } else if (lowerPrompt.includes("independence")) {
+      animationPrompt =
+        "The missiles move out of the frame. The subject stands in salute position with eyes looking at the sky.";
     } else {
       animationPrompt =
         "Very subtle eye blinking and slight hair movement, natural facial expression.";
