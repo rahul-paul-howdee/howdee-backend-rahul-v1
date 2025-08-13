@@ -63,33 +63,12 @@ Include details like:
 };
 
 //  Independence Day
-exports.enhanceIndependencePromptWithOpenAI = async (userPrompt) => {
+exports.hardCodeIndependencePrompt = async (userPrompt) => {
   const systemPrompt = `
-You are a creative prompt enhancer for image generation models like Flux or Stable Diffusion.
-Take the basic prompt of user and expand it into a vivid, photorealistic Independence Day themed portrait prompt in under 150 words.
-Include details like:
-
-Let the flux model detect the person in the selfie, so do not include the gender.
-
-Independence Day Parade
-
-Pose, framing: Portrait image, head to knees, centered, subject occupies ~80% of height.
-
-Subject standing on Rajpath, with India Gate clearly visible in the background.
-
-Subject is in Indian military right-hand salute position, right hand raised so that the thumb is touching the forehead, fingers straight and together, palm facing down, elbow slightly out, body upright, alert, facing forward.
-
-Three fighter jets in the distant sky are flying parallel, leaving parallel smoke trails of orange, white, and green smoke from left to right
-
-Realistic photo style, vibrant daylight colors, sharp focus on subject, slight depth-of-field blur on background.
-
-PUT A TEXT "HAPPY INDEPENDENCE DAY" at 20% of the height from bottom, horizontally centered.
-
-Text style: Bold modern typeface Impact, all caps, size 15, saffron coloured letters, patriotic look.
-
-Strictly follow the above guidelines.
+Create a highly photorealistic Independence Day portrait from head to knees, subject centered in frame. The subject faces the camera directly with a perfect military salute: outer edge of right hand touching right temple, middle fingertip 1–2 cm above eyebrow, fingers straight and tightly together without gaps, thumb pressed flat against index finger, palm flat, wrist straight, pinky edge angled 10–15° downward, forearm at 30° upward, elbow slightly out, shoulder relaxed. Background: The Red Fort with a single large Indian flag fully unfurled, centered at the top. Above it, exactly three fighter jets in perfect parallel formation, leaving long, dense, perfectly parallel tricolor smoke trails (saffron, white, green) that stretch clearly across the sky. Lighting: bright midday sunlight, vibrant colors, natural skin tones, sharp focus on subject, slight depth-of-field blur on background. Add “HAPPY INDEPENDENCE DAY” in bold modern IMPACT font, all caps, large size, bright white with deep saffron outline, positioned 20% from the bottom and horizontally centered as one continuous block.
+Use 85mm lens, f/2.8, shallow depth-of-field for realistic portrait effect.
 `;
-  return getEnhancedPrompt(systemPrompt, userPrompt);
+  return systemPrompt;
 };
 
 // ✨ Generic
