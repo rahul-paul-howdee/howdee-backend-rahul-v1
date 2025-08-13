@@ -5,7 +5,7 @@ const {
   enhancePromptWithOpenAI,
   enhanceDiwaliPromptWithOpenAI,
   enhanceBirthdayPromptWithOpenAI,
-  enhanceIndependencePromptWithOpenAI
+  hardCodeIndependencePrompt
 } = require("../utils/promptEnhancerOpenAiUtil");
 const fs = require("fs");
 
@@ -31,7 +31,7 @@ exports.generateDiwaliImage = async (req, res) => {
     } else if (lowerPrompt.includes("birthday")) {
       enhancedPrompt = await enhanceBirthdayPromptWithOpenAI(userPrompt);
     } else if (lowerPrompt.includes("independence")) {
-      enhancedPrompt = await enhanceIndependencePromptWithOpenAI(userPrompt);
+      enhancedPrompt = await hardCodeIndependencePrompt(userPrompt);
     } else {
       enhancedPrompt = await enhancePromptWithOpenAI(userPrompt);
     }
