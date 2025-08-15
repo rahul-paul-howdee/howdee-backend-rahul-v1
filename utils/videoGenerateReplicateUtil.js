@@ -1,8 +1,13 @@
 const Replicate = require("replicate");
-const cloudinary = require('cloudinary').v2;
-require("dotenv").config();
+const cloudinary = require("cloudinary").v2;
 const axios = require("axios");
-// Configure Cloudinary
+const fs = require("fs");
+const path = require("path");
+require("dotenv").config();
+
+const { addHowdeeWatermark } = require("../utils/addWatermarkUtil");
+const { uploadToCloudinary } = require("../utils/cloudinaryUtil");
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -14,88 +19,84 @@ const replicate = new Replicate({
   timeout: 60000
 });
 
-const SEEDANCE_MODEL = "bytedance/seedance-1-pro:fb4b92e4be45c1ea50c94e71ff51ffd88fd6327e2c55efb431a9d88afdfaeb86";
+const SEEDANCE_MODEL =
+  "bytedance/seedance-1-pro:fb4b92e4be45c1ea50c94e71ff51ffd88fd6327e2c55efb431a9d88afdfaeb86";
 
 /**
- * Generates subtle animation from image using Replicate
- * @param {string} imageUrl - Publicly accessible image URL
- * @param {string} prompt - Animation instructions
- * @returns {Promise<Object>} - { videoUrl, processingTime }
+ * Generates subtle animation from an image, 
+ * adds watermark,
+ * uploads to Cloudinary, returns the Cloudinary URL
  */
+// utils/videoGenerateReplicateUtil.js
 exports.generateSubtleAnimation = async (imageUrl, prompt) => {
+  const startTime = Date.now();
+  const tmpDir = path.join(__dirname, "../tmp");
+  fs.mkdirSync(tmpDir, { recursive: true });
+
   try {
-    // Verify image exists
     await validateImageUrl(imageUrl);
 
-    const input = {
-      image: imageUrl,
-      prompt: `${prompt}. Very subtle natural movements. Maintain perfect facial likeness.`,
-      duration: 5,
-      resolution: "480p", // Lower resolution for better success rate
-      aspect_ratio: "1:1",
-      fps: 24,
-      camera_fixed: true,
-      seed: Math.floor(Math.random() * 1000000)
-    };
-        console.log("generating professional video with using bytedance/seedance-1-pro")
-
-
+    console.log("🎥 Generating professional video with Seedance...");
     const prediction = await replicate.predictions.create({
-      version: SEEDANCE_MODEL.split(":")[1],
-      input: input
+      version: SEEDANCE_MODEL,
+      input: {
+        image: imageUrl,
+        prompt: `${prompt}. Very subtle smile with pride in eyes and moving toward the screen. Maintain perfect facial likeness.`,
+        duration: 5,
+        resolution: "480p",
+        aspect_ratio: "1:1",
+        fps: 24,
+        camera_fixed: true,
+        seed: Math.floor(Math.random() * 1_000_000)
+      }
     });
 
     const result = await waitForCompletion(prediction.id);
-    
-    if (!result.output) {
+    if (!result?.output?.length) {
       throw new Error("Video generation failed - no output URL");
     }
 
+    const generatedVideoUrl = Array.isArray(result.output)
+      ? result.output[0]
+      : result.output;
+
+    console.log("✅ Generated video:", generatedVideoUrl);
+
+    const watermarkedUrl = await addHowdeeWatermark(generatedVideoUrl);
+    console.log("✅ Watermarked video URL:", watermarkedUrl);
+
+    const cloudinaryUrl = await uploadToCloudinary(watermarkedUrl, "video");
+    console.log("✅ Cloudinary video URL:", cloudinaryUrl);
+
     return {
-      videoUrl: result.output,
-      processingTime: result.metrics?.predict_time
+      videoUrl: cloudinaryUrl,
+      replicateUrl: generatedVideoUrl,
+      processingTime: `${((Date.now() - startTime) / 1000).toFixed(1)}s`
     };
   } catch (error) {
-    console.error("Animation Generation Error:", error);
+    console.error("❌ Animation Generation Error:", error);
     throw new Error(`Animation generation failed: ${error.message}`);
   }
 };
 
-/**
- * Adds professional text overlay to video using Cloudinary
- * @param {string} videoUrl - Input video URL
- * @param {Object} textOptions - Text configuration
- * @returns {Promise<string>} - URL of processed video
- */
-exports.addTextOverlayToVideo = async (videoUrl, textOptions) => {
-  try {
-    const result = await cloudinary.uploader.upload(videoUrl, {
-      resource_type: "video",
-      transformation: [
-        {
-          overlay: {
-            font_family: textOptions.font,
-            font_size: textOptions.titleSize,
-            font_weight: "bold",
-            text: `${textOptions.title}\n${textOptions.subtitle}`
-          },
-          color: textOptions.color,
-          gravity: "north",
-          y: 50,
-          effect: "shadow:10"
-        }
-      ]
-    });
 
-    return result.secure_url;
-  } catch (error) {
-    console.error("Text Overlay Error:", error);
-    throw new Error(`Failed to add text overlay: ${error.message}`);
-  }
-};
+/** Downloads a file to disk */
+async function downloadFile(fileUrl, outputPath) {
+  const response = await axios({
+    url: fileUrl,
+    method: "GET",
+    responseType: "stream"
+  });
 
-// Helper Functions
+  return new Promise((resolve, reject) => {
+    const writer = fs.createWriteStream(outputPath);
+    response.data.pipe(writer);
+    writer.on("finish", resolve);
+    writer.on("error", reject);
+  });
+}
 
+/** Validates that the provided image URL is reachable */
 async function validateImageUrl(url) {
   try {
     const response = await axios.head(url);
@@ -107,20 +108,27 @@ async function validateImageUrl(url) {
   }
 }
 
+/** Polls until the Replicate prediction completes */
 async function waitForCompletion(predictionId, timeout = 180000) {
   const start = Date.now();
-  let prediction;
-
   while (Date.now() - start < timeout) {
-    prediction = await replicate.predictions.get(predictionId);
-    
+    const prediction = await replicate.predictions.get(predictionId);
     if (prediction.status === "succeeded") return prediction;
     if (prediction.status === "failed") {
       throw new Error(prediction.error || "Prediction failed");
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(res => setTimeout(res, 3000));
   }
-  
-  throw new Error(`Timeout after ${timeout/1000} seconds`);
+  throw new Error(`Timeout after ${timeout / 1000} seconds`);
+}
+
+/** Cleans up a file from disk */
+function cleanupFile(filePath) {
+  if (fs.existsSync(filePath)) {
+    try {
+      fs.unlinkSync(filePath);
+    } catch (err) {
+      console.warn(`⚠️ Failed to clean up local file: ${err.message}`);
+    }
+  }
 }
