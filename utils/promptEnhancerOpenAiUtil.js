@@ -72,24 +72,43 @@ Use 85mm lens, f/2.8, shallow depth-of-field for realistic portrait effect.
 };
 
 //Good Morning
-exports.hardCodeGoodMorningPrompt = async (userPrompt) => {
+exports.HardCodeGoodMorningPrompt = async (userPrompt) => {
   const systemPrompt = `
-A photorealistic morning portrait in golden sunrise light, framed head to waist, with the subject standing naturally in a lush flower garden against distant hills, 
-holding a white coffee mug and smiling warmly, with a clearly visible bright sun rising prominently in the gap between two mountains and soft mist glowing around it as birds fly across the sky; 
-overlay the text “Good” on the first line and “Morning” on the second line in title case (only the first letter of each word capitalized), centered horizontally at the bottom of the image, using DM Serif Display font at ~15–20% of the image height, 
-with an orange gradient color and a soft outer glow for readability, ensuring the text does not cover the subject’s face and keeping the overall atmosphere cinematic, clean, vibrant, and uplifting.
-';
+You are a creative prompt enhancer for image generation models like Flux or Stable Diffusion.
+Take the user’s basic prompt and expand it into a vivid, photorealistic Good Morning–themed portrait prompt in under 200 words.
+Include details like:
+
+Let the flux model detect the person in the selfie, so do not include the gender.
+
+Portrait framing: head to knees, centered, ~80% height.
+
+Subject standing on a lush green lawn, holding a cup, smiling warmly at the camera.
+
+Background: flowering shrubs (bougainvillea, marigold, hibiscus), a garden bench slightly blurred, a couple of mid-height trees before the mountains, and two mountains with the sun rising in between. A few birds fly near the mountains to connect the mid-ground to the sky.
+
+Morning sunlight with golden rays, vibrant daylight colors, photorealistic sharp focus on the subject, slight depth-of-field blur on background.
+
+Text: “Good
+Morning” placed at 20% from the bottom, horizontally centered. Use the DM Serif Display font, first-letter caps only, font size ~12–14% of image width, colour is a gradient fill from sunrise orange to golden yellow, with a glowing saffron outline for freshness and legibility.`;
   return systemPrompt;
 };
 //Good Night
-exports.hardCodeGoodNightPrompt = async (userPrompt) => {
-  const systemPrompt = `
-A photorealistic evening portrait, framed head to waist, with the subject standing naturally against a dark night sky filled with stars, smiling warmly, 
-with a bright full moon glowing just above the subject’s shoulder, surrounded by a faint halo; overlay the text “Good” on the first line and “Night” on the second line
-in title case (only the first letter of each word capitalized), centered horizontally on the subject’s t-shirt area, using DM Serif Display font at ~15–20% of the image height, 
-in solid white color with clean edges, ensuring high readability and keeping the overall atmosphere cinematic, simple, and serene.
-`;
-  return getEnhancedPrompt(systemPrompt, userPrompt);
+exports.HardCodeGoodNightPrompt = async (userPrompt) => {
+  const systemPrompt = `You are a creative prompt enhancer for image generation models like Flux or Stable Diffusion.
+Take the user’s basic prompt and expand it into a vivid, photorealistic Good Night–themed portrait prompt in under 100 words.
+
+Include details like:
+
+Portrait framing: head to knees, centered, ~80% height.
+
+Subject standing normally on a terrace with a calm smile, softly lit by moonlight.
+
+Background: deep starry night sky with a bright full moon, a few scattered clouds, and faint silhouettes of trees below. Subtle twinkling stars add depth.
+
+Cool bluish tones with gentle highlights on the face from moonlight, photorealistic sharp focus on subject, slight depth-of-field blur on background.
+
+Text: “Good Night” placed at 20% from the bottom, horizontally centered. Use DM Serif Display font, first-letter caps only, size ~12–14% of image width, in glowing white with a soft silver-blue outline for radiance.`;
+  return systemPrompt;
 };
 
 // ✨ Generic
@@ -103,5 +122,3 @@ Use warm lighting, realistic environment, and soft background blur.
 Focus on creating a visually aesthetic composition with a clean frame and good styling.`;
   return getEnhancedPrompt(systemPrompt, userPrompt);
 };
-
-
