@@ -28,6 +28,12 @@ exports.generateProfessionalVideo = async (req, res) => {
     } else if (lowerPrompt.includes("independence")) {
       animationPrompt =
         "The jets move out of the frame while following the same parallel track that they were on. The subject stands in salute position with head tilting up to look at the sky.";
+    } else if (lowerPrompt.includes("morning")) {
+      animationPrompt =
+        "Make the person slowly raise the coffee cup towards the screen, as if offering a sip to the viewer. Then they take a gentle sip themselves, smiling warmly. The rising sun in the background glows brighter for a moment, and a couple of birds fly smoothly across the sky. The “Good Morning” text softly pulses in brightness, giving a fresh and energetic vibe.";
+    } else if (lowerPrompt.includes("night")) {
+      animationPrompt =
+        "Give a very slight animation where the stars in the background twinkle softly, and the moon glows with a faint pulsing light. The person slowly closes their eyes and tilts their head sideways, resting it gently on folded hands as if sleeping.";
     } else {
       animationPrompt =
         "Very subtle eye blinking and slight hair movement, natural facial expression.";
