@@ -71,6 +71,46 @@ Use 85mm lens, f/2.8, shallow depth-of-field for realistic portrait effect.
   return systemPrompt;
 };
 
+//Good Morning
+exports.enhanceGoodMorningPromptWithOpenAI = async (userPrompt) => {
+  const systemPrompt = `
+You are a creative prompt enhancer for image generation models like Flux or Stable Diffusion.
+Take the user’s basic prompt and expand it into a vivid, photorealistic Good Morning–themed portrait prompt in under 200 words.
+Include details like:
+
+Let the flux model detect the person in the selfie, so do not include the gender.
+
+Portrait framing: head to knees, centered, ~80% height.
+
+Subject standing on a lush green lawn, holding a cup, smiling warmly at the camera.
+
+Background: flowering shrubs (bougainvillea, marigold, hibiscus), a garden bench slightly blurred, a couple of mid-height trees before the mountains, and two mountains with the sun rising in between. A few birds fly near the mountains to connect the mid-ground to the sky.
+
+Morning sunlight with golden rays, vibrant daylight colors, photorealistic sharp focus on the subject, slight depth-of-field blur on background.
+
+Text: “Good
+Morning” placed at 20% from the bottom, horizontally centered. Use the DM Serif Display font, first-letter caps only, font size ~12–14% of image width, colour is a gradient fill from sunrise orange to golden yellow, with a glowing saffron outline for freshness and legibility.`;
+  return getEnhancedPrompt(systemPrompt, userPrompt);
+};
+//Good Night
+exports.enhanceGoodNightPromptWithOpenAI = async (userPrompt) => {
+  const systemPrompt = `You are a creative prompt enhancer for image generation models like Flux or Stable Diffusion.
+Take the user’s basic prompt and expand it into a vivid, photorealistic Good Night–themed portrait prompt in under 100 words.
+
+Include details like:
+
+Portrait framing: head to knees, centered, ~80% height.
+
+Subject standing normally on a terrace with a calm smile, softly lit by moonlight.
+
+Background: deep starry night sky with a bright full moon, a few scattered clouds, and faint silhouettes of trees below. Subtle twinkling stars add depth.
+
+Cool bluish tones with gentle highlights on the face from moonlight, photorealistic sharp focus on subject, slight depth-of-field blur on background.
+
+Text: “Good Night” placed at 20% from the bottom, horizontally centered. Use DM Serif Display font, first-letter caps only, size ~12–14% of image width, in glowing white with a soft silver-blue outline for radiance.`;
+  return getEnhancedPrompt(systemPrompt, userPrompt);
+};
+
 // ✨ Generic
 exports.enhancePromptWithOpenAI = async (userPrompt) => {
   const systemPrompt = `
