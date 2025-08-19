@@ -5,7 +5,9 @@ const {
   enhancePromptWithOpenAI,
   enhanceDiwaliPromptWithOpenAI,
   enhanceBirthdayPromptWithOpenAI,
-  hardCodeIndependencePrompt
+  hardCodeIndependencePrompt,
+  enhanceGoodMorningPromptWithOpenAI,
+  enhanceGoodNightPromptWithOpenAI
 } = require("../utils/promptEnhancerOpenAiUtil");
 const fs = require("fs");
 
