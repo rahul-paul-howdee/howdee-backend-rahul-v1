@@ -32,7 +32,11 @@ exports.generateDiwaliImage = async (req, res) => {
       enhancedPrompt = await enhanceBirthdayPromptWithOpenAI(userPrompt);
     } else if (lowerPrompt.includes("independence")) {
       enhancedPrompt = await hardCodeIndependencePrompt(userPrompt);
-    } else {
+    } else if (lowerPrompt.includes("morning")) {
+      enhancedPrompt = await enhanceGoodMorningPromptWithOpenAI(userPrompt);
+    } else if (lowerPrompt.includes("night")) {
+      enhancedPrompt = await enhanceGoodNightPromptWithOpenAI(userPrompt);
+    }else {
       enhancedPrompt = await enhancePromptWithOpenAI(userPrompt);
     }
 
