@@ -6,8 +6,8 @@ const {
   enhanceDiwaliPromptWithOpenAI,
   enhanceBirthdayPromptWithOpenAI,
   hardCodeIndependencePrompt,
-  hardCodeGoodMorningPrompt,
-  hardCodeGoodNightPrompt,
+  HardCodeGoodNightPrompt,
+  HardCodeGoodMorningPrompt
 } = require("../utils/promptEnhancerOpenAiUtil");
 const fs = require("fs");
 
@@ -35,9 +35,9 @@ exports.generateDiwaliImage = async (req, res) => {
     } else if (lowerPrompt.includes("independence")) {
       enhancedPrompt = await hardCodeIndependencePrompt(userPrompt);
     } else if (lowerPrompt.includes("morning")) {
-      enhancedPrompt = await hardCodeGoodMorningPrompt(userPrompt);
+      enhancedPrompt = await HardCodeGoodMorningPrompt(userPrompt);
     } else if (lowerPrompt.includes("night")) {
-      enhancedPrompt = await hardCodeGoodNight(userPrompt);
+      enhancedPrompt = await HardCodeGoodNightPrompt(userPrompt);
     }else {
       enhancedPrompt = await enhancePromptWithOpenAI(userPrompt);
     }
@@ -86,4 +86,3 @@ exports.generateDiwaliImage = async (req, res) => {
     }
   }
 };
-
