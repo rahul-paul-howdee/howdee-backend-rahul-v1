@@ -73,11 +73,7 @@ Use 85mm lens, f/2.8, shallow depth-of-field for realistic portrait effect.
 
 //Good Morning
 exports.HardCodeGoodMorningPrompt = async (userPrompt) => {
-  const systemPrompt = `
-A photorealistic morning portrait in golden sunrise light, framed head to waist, with the subject standing naturally in a lush flower garden against distant hills, 
-holding a white coffee mug and smiling warmly, with a clearly visible bright sun rising prominently in the gap between two mountains and soft mist glowing around it as birds fly across the sky; 
-overlay the text “Good” on the first line and “Morning” on the second line in title case (only the first letter of each word capitalized), centered horizontally at the bottom of the image, using DM Serif Display font at ~15–20% of the image height, 
-with an orange gradient color and a soft outer glow for readability, ensuring the text does not cover the subject’s face and keeping the overall atmosphere cinematic, clean, vibrant, and uplifting.`;
+  const systemPrompt = `Create a photorealistic good morning portrait from head to waist, subject centered in frame.  The subject is standing naturally in a lush flower garden against distant hills, holding a white coffee mug and smiling warmly. Behind the subject, in the background, we see mountains with a clearly visible bright sun rising prominently in the gap between two mountains. The golden sunrise light and a soft mist is glowing in the sky as birds fly across in the distance. Add the text “Good” on the first line and “Morning” below it in the second line in title case (only the first letter of each word capitalized), centered horizontally at the bottom of the image, using DM Serif Display font at ~15–20% of the image height, with an orange gradient color and a soft outer glow for readability, ensuring the text does not cover the subject’s face and keeping the overall atmosphere cinematic, clean, vibrant, and uplifting. Use 85mm lens, f/2.8, shallow depth-of-field for realistic portrait effect.`;
   return systemPrompt;
 };
 //Good Night
@@ -100,4 +96,5 @@ Use warm lighting, realistic environment, and soft background blur.
 Focus on creating a visually aesthetic composition with a clean frame and good styling.`;
   return getEnhancedPrompt(systemPrompt, userPrompt);
 };
+
 
