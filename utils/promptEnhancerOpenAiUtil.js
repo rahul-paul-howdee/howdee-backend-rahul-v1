@@ -73,15 +73,29 @@ Use 85mm lens, f/2.8, shallow depth-of-field for realistic portrait effect.
 
 //Good Morning
 exports.HardCodeGoodMorningPrompt = async (userPrompt) => {
-  const systemPrompt = `Create a photorealistic good morning portrait from head to waist, subject centered in frame.  The subject is standing naturally in a lush flower garden against distant hills, holding a white coffee mug and smiling warmly. Behind the subject, in the background, we see mountains with a clearly visible bright sun rising prominently in the gap between two mountains. The golden sunrise light and a soft mist is glowing in the sky as birds fly across in the distance. Add the text “Good” on the first line and “Morning” below it in the second line in title case (only the first letter of each word capitalized), centered horizontally at the bottom of the image, using DM Serif Display font at ~15–20% of the image height, with an orange gradient color and a soft outer glow for readability, ensuring the text does not cover the subject’s face and keeping the overall atmosphere cinematic, clean, vibrant, and uplifting. Use 85mm lens, f/2.8, shallow depth-of-field for realistic portrait effect.`;
+  const systemPrompt = `
+You are a creative prompt enhancer for image generation models like Flux or Stable Diffusion.
+Take the user’s basic prompt and expand it into a vivid, photorealistic Good Morning–themed portrait prompt in under 200 words.
+Include details like:
+
+Let the flux model detect the person in the selfie, so do not include the gender.
+
+Portrait framing: head to knees, centered, ~80% height.
+
+Subject standing on a lush green lawn, holding a cup, smiling warmly at the camera.
+
+Background: flowering shrubs (bougainvillea, marigold, hibiscus), a garden bench slightly blurred, a couple of mid-height trees before the mountains, and two mountains with the sun rising in between. A few birds fly near the mountains to connect the mid-ground to the sky.
+
+Morning sunlight with golden rays, vibrant daylight colors, photorealistic sharp focus on the subject, slight depth-of-field blur on background.
+
+Text: “Good
+Morning” placed at 20% from the bottom, horizontally centered. Use the DM Serif Display font, first-letter caps only, font size ~12–14% of image width, colour is a gradient fill from sunrise orange to golden yellow, with a glowing saffron outline for freshness and legibility.`;
   return systemPrompt;
 };
 //Good Night
 exports.HardCodeGoodNightPrompt = async (userPrompt) => {
-  const systemPrompt = `A photorealistic evening portrait, framed head to waist, with the subject standing naturally against a dark night sky filled with stars, smiling warmly, 
-with a bright full moon glowing just above the subject’s shoulder, surrounded by a faint halo; overlay the text “Good” on the first line and “Night” on the second line
-in title case (only the first letter of each word capitalized), centered horizontally on the subject’s t-shirt area, using DM Serif Display font at ~15–20% of the image height, 
-in solid white color with clean edges, ensuring high readability and keeping the overall atmosphere cinematic, simple, and serene.`;
+  const systemPrompt = `HardCodeGoodNightPrompt -
+Create a photorealistic evening portrait from head to waist of the subject centred in a portrait frame. The subject is standing naturally against a dark night sky filled with stars, smiling warmly. In the background, a bright full moon is glowing above the subject’s shoulder, surrounded by a faint halo. Add the text “Good” on the first line and “Night” below it in the second line in the title case (only the first letter of each word is capitalized), in the DM Serif Display font, with a blue gradient color and a soft outer glow for high readability. The text is centered horizontally, and is at a height of ~15–20% from the bottom. Keep the overall atmosphere cinematic, simple, and serene. Use 85mm lens, f/2.8, shallow depth-of-field for realistic portrait effect.`;
   return systemPrompt;
 };
 
@@ -96,5 +110,3 @@ Use warm lighting, realistic environment, and soft background blur.
 Focus on creating a visually aesthetic composition with a clean frame and good styling.`;
   return getEnhancedPrompt(systemPrompt, userPrompt);
 };
-
-
