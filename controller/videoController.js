@@ -33,7 +33,7 @@ exports.generateProfessionalVideo = async (req, res) => {
         "Make the person slowly raise the coffee cup towards the screen, as if offering a sip to the viewer. Then they take a gentle sip themselves, smiling warmly. The rising sun in the background glows brighter for a moment, and a couple of birds fly smoothly across the sky. The “Good Morning” text softly pulses in brightness, giving a fresh and energetic vibe.";
     } else if (lowerPrompt.includes("night")) {
       animationPrompt =
-        "Give a very slight animation where the stars in the background twinkle softly, and the moon glows with a faint pulsing light. The person slowly closes their eyes and tilts their head sideways, resting it gently on folded hands as if sleeping.";
+        "Give a very slight animation where the stars in the background twinkle softly, and the moon glows with a faint pulsing light. The subject brings their joined hands above their left shoulder and tilts their head to place their left cheek on the folded hands as if sleeping, while slowly closing their eyes.";
     } else {
       animationPrompt =
         "Very subtle eye blinking and slight hair movement, natural facial expression.";
