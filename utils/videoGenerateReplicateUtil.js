@@ -5,38 +5,46 @@ const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
 
+// --- Import your utility functions ---
+// Assuming these files exist in the specified paths
 const { addHowdeeWatermark } = require("../utils/addWatermarkUtil");
 const { uploadToCloudinary } = require("../utils/cloudinaryUtil");
+const { mergeVideoWithAudio } = require("../utils/addMusicToVideoUtil"); // <-- IMPORT THE NEW MERGE FUNCTION
 
+// --- Cloudinary Configuration ---
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// --- Replicate Client Initialization ---
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
-  timeout: 60000
+  timeout: 60000 // Setting a 60-second timeout for requests
 });
 
 const SEEDANCE_MODEL =
   "bytedance/seedance-1-pro:fb4b92e4be45c1ea50c94e71ff51ffd88fd6327e2c55efb431a9d88afdfaeb86";
 
 /**
- * Generates subtle animation from an image, 
- * adds watermark,
- * uploads to Cloudinary, returns the Cloudinary URL
+ * Generates subtle animation from an image,
+ * merges it with audio,
+ * adds a watermark,
+ * and uploads the final video to Cloudinary.
+ * @param {string} imageUrl - The public URL of the source image.
+ * @param {string} prompt - The prompt to guide the video generation.
+ * @returns {Promise<object>} - An object containing the final Cloudinary URL, the original Replicate URL, and processing time.
  */
-// utils/videoGenerateReplicateUtil.js
 exports.generateSubtleAnimation = async (imageUrl, prompt) => {
   const startTime = Date.now();
-  const tmpDir = path.join(__dirname, "../tmp");
-  fs.mkdirSync(tmpDir, { recursive: true });
 
   try {
+    // 1. Validate the source image URL
     await validateImageUrl(imageUrl);
 
-    console.log("🎥 Generating professional video with Seedance...");
+    // 2. Generate the initial silent video using the Seedance model
+    console.log("🎥 Generating silent video with Seedance...");
     const prediction = await replicate.predictions.create({
       version: SEEDANCE_MODEL,
       input: {
@@ -53,24 +61,33 @@ exports.generateSubtleAnimation = async (imageUrl, prompt) => {
 
     const result = await waitForCompletion(prediction.id);
     if (!result?.output?.length) {
-      throw new Error("Video generation failed - no output URL");
+      throw new Error("Video generation failed - no output URL from Seedance");
     }
 
     const generatedVideoUrl = Array.isArray(result.output)
       ? result.output[0]
       : result.output;
+    console.log("✅ Generated silent video:", generatedVideoUrl);
 
-    console.log("✅ Generated video:", generatedVideoUrl);
+    // 3. Merge the generated video with the hardcoded audio file
+    console.log("🎵 Merging video with audio...");
+    const audioMergedUrl = await mergeVideoWithAudio(generatedVideoUrl);
+    console.log("✅ Audio merged video URL:", audioMergedUrl);
 
-    const watermarkedUrl = await addHowdeeWatermark(generatedVideoUrl);
+    // 4. Add a watermark to the audio-merged video
+    console.log("💧 Adding watermark...");
+    const watermarkedUrl = await addHowdeeWatermark(audioMergedUrl);
     console.log("✅ Watermarked video URL:", watermarkedUrl);
 
+    // 5. Upload the final, watermarked video to Cloudinary
+    console.log("☁️ Uploading to Cloudinary...");
     const cloudinaryUrl = await uploadToCloudinary(watermarkedUrl, "video");
-    console.log("✅ Cloudinary video URL:", cloudinaryUrl);
+    console.log("✅ Final Cloudinary video URL:", cloudinaryUrl);
 
+    // Return all relevant data
     return {
-      videoUrl: cloudinaryUrl,
-      replicateUrl: generatedVideoUrl,
+      videoUrl: cloudinaryUrl, // The final URL for the user
+      replicateUrl: generatedVideoUrl, // The original silent video for reference
       processingTime: `${((Date.now() - startTime) / 1000).toFixed(1)}s`
     };
   } catch (error) {
@@ -80,23 +97,12 @@ exports.generateSubtleAnimation = async (imageUrl, prompt) => {
 };
 
 
-/** Downloads a file to disk */
-async function downloadFile(fileUrl, outputPath) {
-  const response = await axios({
-    url: fileUrl,
-    method: "GET",
-    responseType: "stream"
-  });
+// --- Helper Functions (Unchanged) ---
 
-  return new Promise((resolve, reject) => {
-    const writer = fs.createWriteStream(outputPath);
-    response.data.pipe(writer);
-    writer.on("finish", resolve);
-    writer.on("error", reject);
-  });
-}
-
-/** Validates that the provided image URL is reachable */
+/**
+ * Validates that the provided image URL is reachable by sending a HEAD request.
+ * @param {string} url - The URL to validate.
+ */
 async function validateImageUrl(url) {
   try {
     const response = await axios.head(url);
@@ -104,31 +110,30 @@ async function validateImageUrl(url) {
       throw new Error(`Image URL returned status ${response.status}`);
     }
   } catch (error) {
-    throw new Error(`Invalid image URL: ${error.message}`);
+    throw new Error(`Invalid or unreachable image URL: ${error.message}`);
   }
 }
 
-/** Polls until the Replicate prediction completes */
+/**
+ * Polls the Replicate API until a prediction is completed (succeeded or failed).
+ * @param {string} predictionId - The ID of the Replicate prediction to wait for.
+ * @param {number} [timeout=180000] - Timeout in milliseconds.
+ * @returns {Promise<object>} - The completed prediction object.
+ */
 async function waitForCompletion(predictionId, timeout = 180000) {
   const start = Date.now();
+  console.log(`Waiting for prediction ${predictionId} to complete...`);
   while (Date.now() - start < timeout) {
     const prediction = await replicate.predictions.get(predictionId);
-    if (prediction.status === "succeeded") return prediction;
-    if (prediction.status === "failed") {
-      throw new Error(prediction.error || "Prediction failed");
+    if (prediction.status === "succeeded") {
+      console.log("Prediction succeeded!");
+      return prediction;
     }
+    if (prediction.status === "failed") {
+      throw new Error(prediction.error || "Prediction failed with no error message.");
+    }
+    // Wait for 3 seconds before polling again
     await new Promise(res => setTimeout(res, 3000));
   }
-  throw new Error(`Timeout after ${timeout / 1000} seconds`);
-}
-
-/** Cleans up a file from disk */
-function cleanupFile(filePath) {
-  if (fs.existsSync(filePath)) {
-    try {
-      fs.unlinkSync(filePath);
-    } catch (err) {
-      console.warn(`⚠️ Failed to clean up local file: ${err.message}`);
-    }
-  }
+  throw new Error(`Timeout waiting for prediction to complete after ${timeout / 1000} seconds.`);
 }
