@@ -34,6 +34,9 @@ exports.generateProfessionalVideo = async (req, res) => {
     } else if (lowerPrompt.includes("night")) {
       animationPrompt =
         "Give a very slight animation where the stars in the background twinkle softly, and the moon glows with a faint pulsing light. The subject brings their joined hands above their left shoulder and tilts their head to place their left cheek on the folded hands as if sleeping, while slowly closing their eyes.";
+    } else if (lowerPrompt.includes("ganesh")) {
+      animationPrompt =
+        "Give a very slight animation where the faint golden sparkles drift across, the incense smoke curls upward gently, flowers fall from the left and right. The subject bows down his head gently";
     } else {
       animationPrompt =
         "Very subtle eye blinking and slight hair movement, natural facial expression.";
