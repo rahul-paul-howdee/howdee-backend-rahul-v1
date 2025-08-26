@@ -98,6 +98,11 @@ exports.HardCodeGoodNightPrompt = async (userPrompt) => {
 Create a photorealistic evening portrait from head to waist of the subject centred in a portrait frame. The subject is standing naturally against a dark night sky filled with stars, smiling warmly. In the background, a bright full moon is glowing above the subject’s shoulder, surrounded by a faint halo. Add the text “Good” on the first line and “Night” below it in the second line in the title case (only the first letter of each word is capitalized), in the DM Serif Display font, with a blue gradient color and a soft outer glow for high readability. The text is centered horizontally, and is at a height of ~15–20% from the bottom. Keep the overall atmosphere cinematic, simple, and serene. Use 85mm lens, f/2.8, shallow depth-of-field for realistic portrait effect.`;
   return systemPrompt;
 };
+//Ganesh Chaturthi
+exports.HardCodeGaneshChaturthiPrompt = async (userPrompt) => {
+  const systemPrompt = `Create a highly photorealistic festive portrait from head to knees, subject centered in frame. The subject stands tall with his hands doing a namaste pose. In the background, a larger than life sized idol of the Indian god Ganesha is beautifully decorated and placed on an ornate stage with fresh marigold and mango leaf garlands. The floor is covered with vibrant flower petals and colors. In the air, faint golden sparkles and thin incense smoke drift softly. Slightly blurred in the background, people in traditional attire play drums. Lighting is rich golden-orange, casting a divine glow, with the idol of Ganesha radiating softly as if lit from within. Use 85mm lens, f/2.8, shallow depth-of-field for realistic portrait effect. Add the text “HAPPY GANESH CHATURTHI” in bold modern IMPACT font, all caps, large size, saffron-orange text colour with a thick bright white outline, positioned 20% from the bottom and horizontally centered.`
+    return systemPrompt;
+};
 
 // ✨ Generic
 exports.enhancePromptWithOpenAI = async (userPrompt) => {
